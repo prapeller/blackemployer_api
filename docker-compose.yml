@@ -1,0 +1,42 @@
+#docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' db
+
+#docker-compose run --rm app sh -c "python manage.py test"
+
+version: '3.9'
+
+services:
+  db:
+    image: postgres:14-alpine
+    privileged: true
+    container_name: db
+    restart: always
+    ports:
+      - "54325:5432"
+    environment:
+      POSTGRES_DB: blackemployer_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secretpass
+#      POSTGRES_HOST_AUTH_METHOD: trust
+#    volumes:
+#      - db:/var/lib/postgresql/data
+
+  app:
+    container_name: app
+    build: .
+    restart: always
+    ports:
+      - 8000:8000
+    volumes:
+      - ./app:/app
+    command: >
+      sh -c "python manage.py makemigrations
+      && python manage.py migrate
+      && python manage.py runserver 0.0.0.0:8000"
+    environment:
+      DJANGO_SETTINGS_MODULE: 'app.settings.prod_postgres'
+    depends_on:
+      - db
+
+
+volumes:
+  db:
