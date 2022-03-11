@@ -15,10 +15,10 @@ services:
     environment:
       POSTGRES_DB: blackemployer_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: secretpass
-#      POSTGRES_HOST_AUTH_METHOD: trust
-#    volumes:
-#      - db:/var/lib/postgresql/data
+      POSTGRES_PASSWORD: postgres
+  #      POSTGRES_HOST_AUTH_METHOD: trust
+  #    volumes:
+  #      - db:/var/lib/postgresql/data
 
   app:
     container_name: app
