@@ -16,9 +16,9 @@ services:
       POSTGRES_DB: blackemployer_db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-  #      POSTGRES_HOST_AUTH_METHOD: trust
-  #    volumes:
-  #      - db:/var/lib/postgresql/data
+    # POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - db:/var/lib/postgresql/data
 
   app:
     container_name: app
@@ -32,7 +32,7 @@ services:
       sh -c "python manage.py makemigrations
       && python manage.py migrate
       && python manage.py runserver 0.0.0.0:80"
-#      && gunicorn app.wsgi -b 0.0.0.0:80"
+    #      && gunicorn app.wsgi -b 0.0.0.0:80"
     environment:
       DJANGO_SETTINGS_MODULE: 'app.settings.prod_postgres'
     depends_on:
