@@ -39,6 +39,7 @@ services:
       - db
 
   nginx:
+    container_name: nginx
     build: ./nginx
     privileged: true
     ports:
