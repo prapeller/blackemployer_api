@@ -129,6 +129,6 @@ dmypy.json
 .pyre/
 /app/app/settings/prod.py
 /app/app/settings/prod_postgres.py
-/nginx/blackemployer.com.crt
-/nginx/blackemployer.com.key
+/nginx/blackemployer.crt
+/nginx/blackemployer.key
 /nginx/ca.crt
