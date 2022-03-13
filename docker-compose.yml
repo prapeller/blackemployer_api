@@ -27,10 +27,12 @@ services:
     ports:
       - 8000:8000
     volumes:
+      - static:/vol/web/static
       - ./app:/app
     command: >
       sh -c "python manage.py makemigrations
       && python manage.py migrate
+      && python manage.py collectstatic
       && gunicorn app.wsgi -b 0.0.0.0:8000"
 #      && python manage.py runserver 0.0.0.0:8000"
     environment:
@@ -43,10 +45,13 @@ services:
     build: ./nginx
     privileged: true
     ports:
-      - "80:8000"
+      - "80:80"
     depends_on:
       - app
+    volumes:
+      - static:/static
 
 
 volumes:
   db:
+  static:
