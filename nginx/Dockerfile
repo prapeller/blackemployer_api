@@ -1,7 +1,6 @@
-FROM nginx:latest
+FROM nginx:alpine
 
-RUN rm /etc/nginx/conf.d/default.conf
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY default.conf /etc/nginx/conf.d/default.conf
 
 COPY  blackemployer.com.crt /etc/ssl/blackemployer.com.crt
 COPY  blackemployer.com.key /etc/ssl/blackemployer.com.key
