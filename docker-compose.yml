@@ -25,14 +25,14 @@ services:
     build: .
     restart: always
     ports:
-      - 80:8000
+      - 8000:8000
     volumes:
       - ./app:/app
     command: >
       sh -c "python manage.py makemigrations
       && python manage.py migrate
-      && python manage.py runserver 0.0.0.0:8000"
-    #      && gunicorn app.wsgi -b 0.0.0.0:8000"
+      && gunicorn app.wsgi -b 0.0.0.0:8000"
+#      && python manage.py runserver 0.0.0.0:8000"
     environment:
       DJANGO_SETTINGS_MODULE: 'app.settings.prod_postgres'
     depends_on:
@@ -42,7 +42,7 @@ services:
     build: ./nginx
     privileged: true
     ports:
-      - "8000:8000"
+      - "80:8000"
     depends_on:
       - app
 
