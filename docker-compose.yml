@@ -38,6 +38,14 @@ services:
     depends_on:
       - db
 
+  nginx:
+    build: ./nginx
+    privileged: true
+    ports:
+      - "80:8000"
+    depends_on:
+      - app
+
 
 volumes:
   db:
