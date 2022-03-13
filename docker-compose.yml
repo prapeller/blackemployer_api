@@ -45,11 +45,21 @@ services:
     privileged: true
     ports:
       - "80:80"
+      - "443:443"
     depends_on:
       - app
     volumes:
       - static:/static
 
+#  certbot:
+#    image: certbot/certbot
+#    depends_on:
+#      - nginx
+#    container_name: cerbot
+#    volumes:
+#      - etc-letsencrypt:/etc/letsencrypt
+#      - www-thml:/var/www/html
+#    command: certonly --webroot --webroot-path=/var/www/html --email
 
 volumes:
   static:
