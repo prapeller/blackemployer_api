@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="text-center">
+        {% if user.is_authenticated %}
+            <p>hello, {{ user.username }}</p>
+        {% else %}
+        <p>register/login to continue</p>
+        {% endif %}
+    </div>
+
+    <div class="text-center">
+        <h1 class="display-5fw-bold">here you can check your potential employer</h1>
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="text-center">
+        <h1 class="display-5fw-bold">here you can create your case so others could check</h1>
+    </div>
+
+
+
+{% endblock %}
+

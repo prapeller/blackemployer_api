@@ -1,0 +1,21 @@
+{% extends 'users/base.html' %}
+
+{% block main %}
+<div class="col-lg-5">
+    <div class="card shadow-lg border-0 rounded-lg mt-5">
+        <div class="card-header"><h3 class="text-center font-weight-light my-4">Profile activation:</h3>
+        </div>
+        <div class="card-body text-center">
+            {% if user.is_authenticated %}
+                <h4>Congratulations! {{ user.username }}, your email was verified.</h4>
+            {% else %}
+                <h3>Please verify your email.</h3>
+            {% endif %}
+            <br>
+            <button class="btn btn-round form-control">
+                <a href="{% url 'index' %}" class="">To Main!</a>
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

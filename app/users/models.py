@@ -15,7 +15,7 @@ class UserManager(BaseUserManager):
         username = extra_fields.get('username')
         user.username = username if username else user.email
         user.set_password(password)
-        user.is_active = False
+        user.is_active = True
         user.save(using=self._db)
         Token.objects.create(user=user)
         return user
@@ -42,9 +42,11 @@ class User(AbstractUser):
 
     objects = UserManager()
 
+
     # EMAIL_FIELD = 'email'
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
+
 
     def __str__(self):
         return self.username
