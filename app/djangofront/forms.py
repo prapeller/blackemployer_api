@@ -96,3 +96,13 @@ class UserRegisterForm(UserCreationForm):
         user.send_verify_link()
         user.save()
         return user
+
+
+class CompanyCreateForm(forms.ModelForm):
+    title = forms.CharField(label='name', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    text = forms.CharField(label='name', widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '3'}))
+    image = forms.FileField(label='image', widget=forms.FileInput(attrs={'class': 'form-control'}), required=False)
+
+    class Meta:
+        model = Company
+        fields = ('title', 'text', 'image')

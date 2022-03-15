@@ -33,9 +33,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'handler',
+    'shared',
     'users',
     'companies',
     'djangofront',
+    'content',
 
 ]
 
@@ -166,5 +168,5 @@ REST_FRAMEWORK = {
 }
 
 AUTH_USER_MODEL = 'users.User'
-LOGIN_URL = '/admin/login/'
+LOGIN_URL = 'djangofront/login/'
 LOGIN_REDIRECT_URL = ''

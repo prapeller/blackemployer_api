@@ -8,7 +8,7 @@
             <div class="text-center">
                 <h1 class="display-5fw-bold">Check your potential employer</h1>
             </div>
-            <button type="button" class="btn btn-primary">Here</button>
+            <a href="{% url 'djangofront:company_list' %}"><button type="button" class="btn btn-primary">Here</button></a>
         {% else %}
             <p>Please SignUp or Login to continue</p>
             <div class="text-center">

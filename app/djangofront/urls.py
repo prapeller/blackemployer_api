@@ -1,6 +1,10 @@
 from django.urls import path, include
 
-from djangofront.views import index, verification, LoginView, RegisterView, LogoutView
+from djangofront.views import (
+    index, verification, LoginView, RegisterView, LogoutView,
+    CompanyList, CompanyCreate, CompanyUpdate, CompanyDelete,
+    CaseList, CaseCreate, CaseUpdate, CaseDelete,
+)
 
 app_name = 'djangofront'
 
@@ -17,9 +21,20 @@ urlpatterns = [
     # path('', include('django.contrib.auth.urls')),
 
     path('', index, name='index'),
-    path('verification/', verification, name='verification'),
+    path('djangofront/verification/', verification, name='verification'),
 
-    path('register/', RegisterView.as_view(), name='register'),
-    path('login/', LoginView.as_view(), name='login'),
-    path('logout/', LogoutView.as_view(), name='logout'),
+    path('djangofront/register/', RegisterView.as_view(), name='register'),
+    path('djangofront/login/', LoginView.as_view(), name='login'),
+    path('djangofront/logout/', LogoutView.as_view(), name='logout'),
+
+    path('djangofront/companies/', CompanyList.as_view(), name='company_list'),
+    path('djangofront/companies/create/', CompanyCreate.as_view(), name='company_create'),
+    path('djangofront/companies/update/', CompanyUpdate.as_view(), name='company_update'),
+    path('djangofront/companies/delete/', CompanyDelete.as_view(), name='company_delete'),
+
+    path('djangofront/cases/', CaseList.as_view(), name='case_list'),
+    path('djangofront/cases/create/', CaseCreate.as_view(), name='case_create'),
+    path('djangofront/cases/update/', CaseUpdate.as_view(), name='case_update'),
+    path('djangofront/cases/delete/', CaseDelete.as_view(), name='case_delete'),
+
 ]
