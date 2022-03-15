@@ -24,12 +24,13 @@ from rest_framework.authtoken.views import obtain_auth_token
 from users.views import UserModelViewSet
 
 router = DefaultRouter()
-
+router.register('users', UserModelViewSet)
 
 urlpatterns = [
+    path('', include('djangofront.urls')),
+    path('', include('users.urls')),
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
-    path('', include('djangofront.urls')),
 ]
 
 if settings.DEBUG == True:

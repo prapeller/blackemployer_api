@@ -4,24 +4,19 @@
 
     <div class="text-center">
         {% if user.is_authenticated %}
-            <p>hello, {{ user.username }}</p>
+            <p>hi, {{ user.username }}!</p>
+            <div class="text-center">
+                <h1 class="display-5fw-bold">Check your potential employer</h1>
+            </div>
+            <button type="button" class="btn btn-primary">Here</button>
         {% else %}
-        <p>register/login to continue</p>
+            <p>Please SignUp or Login to continue</p>
+            <div class="text-center">
+                <h1 class="display-5fw-bold">And you will be able to check your potential employer</h1>
+            </div>
         {% endif %}
     </div>
 
-    <div class="text-center">
-        <h1 class="display-5fw-bold">here you can check your potential employer</h1>
-    </div>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <div class="text-center">
-        <h1 class="display-5fw-bold">here you can create your case so others could check</h1>
-    </div>
 
 
 

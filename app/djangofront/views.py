@@ -16,6 +16,11 @@ def index(request):
     context = {'title': 'Main'}
     return render(request, 'index.html', context)
 
+@user_passes_test(lambda u: u is not None and u.is_active)
+def verification(request):
+    context = {'title': 'Verification'}
+    return render(request, 'verification.html', context)
+
 
 class LoginView(Login):
     form_class = UserLoginForm
@@ -37,7 +42,7 @@ class RegisterView(SuccessMessageMixin, CreateView):
     template_name = 'register.html'
     success_url = reverse_lazy('djangofront:login')
     extra_context = {'title': 'Login'}
-    success_message = "Your account was created successfully"
+    success_message = "Your account was created successfully! Please verify your account by following link we sent to your email."
 
     def form_valid(self, form):
         super().form_valid(form)

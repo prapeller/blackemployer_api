@@ -1,11 +1,10 @@
 from django.urls import path, include
 
-from djangofront.views import index, LoginView, RegisterView, LogoutView
+from djangofront.views import index, verification, LoginView, RegisterView, LogoutView
 
 app_name = 'djangofront'
 
 urlpatterns = [
-    path('', index, name='index'),
 
     # users/login/ [name='login']
     # users/logout/ [name='logout']
@@ -16,6 +15,9 @@ urlpatterns = [
     # users/reset/<uidb64>/<token>/ [name='password_reset_confirm']
     # users/reset/done/ [name='password_reset_complete']
     # path('', include('django.contrib.auth.urls')),
+
+    path('', index, name='index'),
+    path('verification/', verification, name='verification'),
 
     path('register/', RegisterView.as_view(), name='register'),
     path('login/', LoginView.as_view(), name='login'),

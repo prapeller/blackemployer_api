@@ -1,8 +1,8 @@
-from django.contrib.auth.forms import forms, AuthenticationForm
 from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.forms import UserCreationForm
-from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.forms import forms
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.utils.translation import gettext_lazy as _
 
 from companies.models import Company
 
@@ -91,4 +91,8 @@ class UserRegisterForm(UserCreationForm):
         fields = ('email', 'password1', 'password2')
 
     def save(self, commit=True):
-        return get_user_model().objects.create_user(email=self.cleaned_data["email"], password=self.cleaned_data["password1"])
+        user = get_user_model().objects.create_user(email=self.cleaned_data["email"], password=self.cleaned_data["password1"])
+        user.set_activation_key()
+        user.send_verify_link()
+        user.save()
+        return user
