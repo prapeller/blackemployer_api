@@ -1,0 +1,7 @@
+{% if companies_list %}
+    {% for obj in companies_list %}
+        <div class="btn-group">
+            <a href="{% url 'djangofront:company_detail' obj.pk %}" class="list-group-item list-group-item-action">{{ obj }}</a>
+        </div>
+    {% endfor %}
+{% endif %}

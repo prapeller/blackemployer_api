@@ -10,6 +10,5 @@ $('#exampleModal').on('show.bs.modal', e => {
     title.innerHTML = `Deleting ${obj_pk} from ${obj_type}`
 
     let deleteForm = document.getElementsByClassName('delete-form')[0]
-    deleteForm.setAttribute('action', `/adminpanel/${app}/${obj_type}/delete/${obj_pk}/`)
-
+    deleteForm.setAttribute('action', `/djangofront/${app}/${obj_type}/delete/${obj_pk}/`)
 })

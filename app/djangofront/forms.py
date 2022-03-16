@@ -4,15 +4,7 @@ from django.contrib.auth.forms import forms
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 
-from companies.models import Company
-
-
-class CompanyForm(forms.ModelForm):
-    name = forms.CharField(label='name', max_length=50, widget=forms.TextInput(attrs={'class': 'form-control'}))
-
-    class Meta:
-        model = Company
-        fields = ('name',)
+from companies.models import Company, Case, Comment
 
 
 class UserLoginForm(forms.Form):
@@ -98,11 +90,46 @@ class UserRegisterForm(UserCreationForm):
         return user
 
 
-class CompanyCreateForm(forms.ModelForm):
-    title = forms.CharField(label='name', widget=forms.TextInput(attrs={'class': 'form-control'}))
-    text = forms.CharField(label='name', widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '3'}))
+class CompanyForm(forms.ModelForm):
+    title = forms.CharField(label='title', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    text = forms.CharField(label='description', widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '3'}))
+    website = forms.URLField(label='website', widget=forms.URLInput(attrs={'class': 'form-control'}))
     image = forms.FileField(label='image', widget=forms.FileInput(attrs={'class': 'form-control'}), required=False)
 
     class Meta:
         model = Company
-        fields = ('title', 'text', 'image')
+        fields = ('title', 'text', 'website', 'image')
+
+
+class CaseForm(forms.ModelForm):
+    case_date = forms.DateTimeField(label='date', widget=forms.DateInput(attrs={'type':'date', 'class': 'form-control'}))
+    case_description = forms.CharField(label='description', widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '3'}))
+    position = forms.CharField(label='position', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    position_description = forms.CharField(label='position description', widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '3'}))
+
+    class Meta:
+        model = Case
+        fields = ('case_date', 'case_description', 'position', 'position_description')
+
+
+class CommentForm(forms.ModelForm):
+    text = forms.CharField(label='text', widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '3'}))
+    image = forms.FileField(label='image', widget=forms.FileInput(attrs={'class': 'form-control'}), required=False)
+
+    class Meta:
+        model = Comment
+        fields = ('text', 'image')
+
+
+class TagForm(forms.Form):
+    tag_title = forms.CharField(label='tag', widget=forms.TextInput(attrs={'class': 'form-control'}))
+
+    class Meta:
+        fields = ('tag_title',)
+
+
+class ImageForm(forms.Form):
+    image = forms.FileField(label='image', widget=forms.FileInput(attrs={'class': 'form-control'}), required=False)
+
+    class Meta:
+        fields = ('image',)

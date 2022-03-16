@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    {#    header #}
+    <div class="header">
+        <div class="back-btn-box">
+            <a class="back-btn-small" href="{% url 'djangofront:company_update' pk=object.company.pk %}"></a>
+        </div>
+        <div class="header-text">
+            <h1 class="display-5 fw-bold">Case</h1>
+            <p>{{ object }}</p>
+        </div>
+    </div>
+
+    {#  form #}
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+
+            <label class="form-label mt-4" for="{{ form.case_date.auto_id }}">{{ form.case_date.label }}</label>
+            {{ form.case_date }}
+
+            <label class="form-label mt-4" for="{{ form.case_description.auto_id }}">{{ form.case_description.label }}</label>
+            {{ form.case_description }}
+
+            <label class="form-label mt-4" for="{{ form.position.auto_id }}">{{ form.position.label }}</label>
+            {{ form.position }}
+
+            <label class="form-label mt-4" for="{{ form.position_description.auto_id }}">{{ form.position_description.label }}</label>
+            {{ form.position_description }}
+
+            <div class="text-center mt-4">
+                <input class="btn btn-primary" type="submit" value="Ok">
+            </div>
+        </div>
+    </form>
+
+
+    {# image box#}
+    <div class="image-box">
+        {% if object.image %}
+            <img class="image" src="{{ object.image.url }}" alt="ooops">
+        {% else %}
+            <img class="image" src="{{ STATIC_PREFIX }}media/images/no_image.png" alt="ooops">
+        {% endif %}
+    </div>
+
+    {#  image_form #}
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label class="form-label mt-4" for="{{ image_form.image.auto_id }}">{{ image_form.image.label }}</label>
+        {{ image_form.image }}
+        <div class="text-center mt-4">
+            <input class="btn btn-primary" type="submit" value="Add image">
+        </div>
+    </form>
+
+
+    <!-- tags -->
+    <div class="tags">
+        {% include 'companies/includes/tags.html' %}
+    </div>
+
+    <!-- tag form -->
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+
+            <label class="form-label mt-4" for="{{ tag_form.tag_title.auto_id }}">{{ tag_form.tag_title.label }}</label>
+            {{ tag_form.tag_title }}
+
+            <div class="text-center mt-4">
+                <input class="btn btn-primary" type="submit" value="Add tag">
+            </div>
+        </div>
+    </form>
+
+    {% include 'includes/inn_delete_modal.html' %}
+    <script src="{{ STATIC_PREFIX }}js/delete_tag.js" defer></script>
+
+{% endblock %}

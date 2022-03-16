@@ -8,7 +8,7 @@
             <a class="back-btn-small" href="{% url 'djangofront:company_list' %}"></a>
         </div>
         <div class="header-text">
-            <h1 class="display-5 fw-bold">Company</h1>
+            <h1 class="display-5 fw-bold">Case</h1>
             <p>{{ object }}</p>
             {# image box#}
             <div class="image-box">
@@ -21,40 +21,39 @@
         </div>
     </div>
 
+    <!-- tags -->
+    <p class="display-6 header-text fw-bold"> Tags:</p>
+    <div class="list-group">
+        {% if object_tag_list %}
+            {% for obj in object_tag_list %}
+                <div class="btn-group">
+                    <a href="{% url 'djangofront:case_update' obj.pk %}" class="list-group-item">{{ obj }}</a>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
 
-    {#  form #}
+    {#  comment form #}
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group">
 
-            <label class="form-label mt-4" for="{{ form.image.auto_id }}">{{ form.image.label }}</label>
-            {{ form.image }}
+            <label class="form-label mt-4" for="{{ comment_form.image.auto_id }}">{{ comment_form.image.label }}</label>
+            {{ comment_form.image }}
 
-            <label class="form-label mt-4" for="{{ form.title.auto_id }}">{{ form.title.label }}</label>
+            <label class="form-label mt-4" for="{{ comment_form.title.auto_id }}">{{ comment_form.title.label }}</label>
             {{ form.title }}
 
-            <label class="form-label mt-4" for="{{ form.website.auto_id }}">{{ form.website.label }}</label>
+            <label class="form-label mt-4" for="{{ comment_form.website.auto_id }}">{{ comment_form.website.label }}</label>
             {{ form.website }}
 
             <label class="form-label mt-4" for="{{ form.text.auto_id }}">{{ form.text.label }}</label>
             {{ form.text }}
             <div class="text-center mt-4">
-                <input class="btn btn-primary" type="submit" value="Ok">
+                <input class="btn btn-primary" type="submit" value="Post">
             </div>
         </div>
     </form>
-
-    <!-- cases -->
-    <p class="display-6 header-text fw-bold"> Cases:</p>
-    <div class="cases">
-        {% include 'companies/includes/cases.html' %}
-    </div>
-
-
-    <!-- add case -->
-    <div class="d-grid">
-        <a class="btn btn_add" href="{% url 'djangofront:case_create' %}" id="add"></a>
-    </div>
 
     {% include 'includes/inn_delete_modal.html' %}
 
