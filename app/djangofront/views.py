@@ -13,30 +13,32 @@ from django.views.generic import ListView, CreateView, UpdateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import BaseDeleteView, ProcessFormView, BaseFormView
 
-from companies.models import Company, Case
+from companies.models import Company, Case, Comment
 from content.models import Tag
 from djangofront.forms import (UserLoginForm, UserRegisterForm, UserProfileForm,
-                               CompanyForm, CaseForm, ImageForm, TagForm, PasswordChangeForm, CompanyDetailForm)
+                               CompanyForm, CaseForm, ImageForm, TagForm, PasswordChangeForm,
+                               CompanyDetailForm, CaseDetailForm,
+                               CommentForm)
 from djangofront.mixin import UserIsNotNoneMixin, UserIsActiveMixin, UserIsSuperuserMixin, PreviousPageMixin
 
 
 @user_passes_test(lambda u: u is not None)
 def index(request):
-    context = {"title": "Main"}
-    return render(request, "index.html", context)
+    context = {'title': 'Main'}
+    return render(request, 'index.html', context)
 
 
 @user_passes_test(lambda u: u is not None and u.is_active)
 def verification(request):
-    context = {"title": "Verification"}
-    return render(request, "verification.html", context)
+    context = {'title': 'Verification'}
+    return render(request, 'verification.html', context)
 
 
 class LoginView(PreviousPageMixin, UserIsNotNoneMixin, Login):
     form_class = UserLoginForm
-    template_name = "login.html"
-    success_url = reverse_lazy("djangofront:index")
-    extra_context = {"title": "Login"}
+    template_name = 'login.html'
+    success_url = reverse_lazy('djangofront:index')
+    extra_context = {'title': 'Login'}
 
     def form_valid(self, form):
         login(self.request, form.get_user())
@@ -46,41 +48,41 @@ class LoginView(PreviousPageMixin, UserIsNotNoneMixin, Login):
 class ProfileView(PreviousPageMixin, LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = get_user_model()
     form_class = UserProfileForm
-    template_name = "profile.html"
-    success_message = "Your profile was updated successfully!"
+    template_name = 'profile.html'
+    success_message = 'Your profile was updated successfully!'
 
     def form_valid(self, form):
         self.object = form.save()
-        self.success_url = reverse_lazy("djangofront:profile", kwargs={"pk": self.object.pk})
+        self.success_url = reverse_lazy('djangofront:profile', kwargs={'pk': self.object.pk})
         return super().form_valid(form)
 
 
 class LogoutView(LoginRequiredMixin, Logout):
-    next_page = reverse_lazy("djangofront:index")
+    next_page = reverse_lazy('djangofront:index')
 
 
 class RegisterView(PreviousPageMixin, SuccessMessageMixin, CreateView):
     form_class = UserRegisterForm
-    template_name = "register.html"
-    success_url = reverse_lazy("djangofront:login")
-    extra_context = {"title": "Login"}
-    success_message = "Your account was created successfully! Please verify your account by following the link we sent to your email."
+    template_name = 'register.html'
+    success_url = reverse_lazy('djangofront:login')
+    extra_context = {'title': 'Login'}
+    success_message = 'Your account was created successfully! Please verify your account by following the link we sent to your email.'
 
     def form_valid(self, form):
         super().form_valid(form)
-        return HttpResponseRedirect(reverse_lazy("djangofront:login"))
+        return HttpResponseRedirect(reverse_lazy('djangofront:login'))
 
 
 class PasswordChangeView(PreviousPageMixin, PasswordChange):
     form_class = PasswordChangeForm
-    success_url = reverse_lazy("djangofront:index")
-    template_name = "password_change.html"
+    success_url = reverse_lazy('djangofront:index')
+    template_name = 'password_change.html'
 
 
 class CompanyList(PreviousPageMixin, LoginRequiredMixin, ListView):
     model = Company
-    extra_context = {"title": "blackemployer companies list"}
-    ordering = ["title"]
+    extra_context = {'title': 'blackemployer companies list'}
+    ordering = ['title']
 
     def get_queryset(self):
         return Company.objects.filter(is_active=True)
@@ -89,8 +91,8 @@ class CompanyList(PreviousPageMixin, LoginRequiredMixin, ListView):
 class UserCompanyList(PreviousPageMixin, LoginRequiredMixin, ListView):
     model = Company
     template_name = 'companies/company_list_user.html'
-    extra_context = {"title": "blackemployer my companies list"}
-    ordering = ["title"]
+    extra_context = {'title': 'blackemployer my companies list'}
+    ordering = ['title']
 
     def get_queryset(self):
         return Company.objects.filter(creator=self.request.user, is_active=True)
@@ -99,49 +101,49 @@ class UserCompanyList(PreviousPageMixin, LoginRequiredMixin, ListView):
 class CompanyCreate(PreviousPageMixin, LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Company
     form_class = CompanyForm
-    template_name = "companies/company_form.html"
-    success_message = "Success! New company is created!"
+    template_name = 'companies/company_form.html'
+    success_message = 'Success! New company is created!'
     extra_context = {
-        "title": "blackemployer - company create"
+        'title': 'blackemployer - company create'
     }
 
     def form_valid(self, form):
         self.object = form.save()
         self.object.creator = self.request.user
-        self.success_url = reverse_lazy("djangofront:company_update", kwargs={"pk": self.object.pk})
+        self.success_url = reverse_lazy('djangofront:company_update', kwargs={'pk': self.object.pk})
         return super().form_valid(form)
 
 
 class CompanyDetail(PreviousPageMixin, LoginRequiredMixin, UpdateView):
     model = Company
-    template_name = "companies/company_detail.html"
+    template_name = 'companies/company_detail.html'
     form_class = CompanyDetailForm
     extra_context = {
-        "title": "blackemployer - company detail",
+        'title': 'blackemployer - company detail',
     }
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        self.extra_context.update({"sub_object_list": Case.objects.filter(company=self.object)})
+        self.extra_context.update({'sub_object_list': Case.objects.filter(company=self.object)})
         return super().get(request, *args, **kwargs)
 
 
 class CompanyUpdate(PreviousPageMixin, LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Company
-    template_name = "companies/company_form.html"
+    template_name = 'companies/company_form.html'
     form_class = CompanyForm
     extra_context = {
-        "title": "blackemployer - company update"
+        'title': 'blackemployer - company update',
     }
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        self.extra_context.update({"sub_object_list": Case.objects.filter(company=self.object)})
+        self.extra_context.update({'sub_object_list': self.object.case_set.all()})
         return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
         self.object = form.save()
-        self.success_url = reverse_lazy("djangofront:company_update", kwargs={"pk": self.object.pk})
+        self.success_url = reverse_lazy('djangofront:company_update', kwargs={'pk': self.object.pk})
         return super().form_valid(form)
 
 
@@ -151,7 +153,7 @@ class CompanyDelete(BaseDeleteView):
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         self.object.is_active = False
-        self.success_url = reverse_lazy("djangofront:company_list")
+        self.success_url = reverse_lazy('djangofront:company_list')
         return HttpResponseRedirect(self.success_url)
 
 
@@ -159,20 +161,40 @@ class CaseList(LoginRequiredMixin, ListView):
     pass
 
 
-class CaseCreate(PreviousPageMixin, UserIsActiveMixin, LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class CaseCreate(PreviousPageMixin, LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    model = Case
+    form_class = CaseForm
+    template_name = 'companies/case_form.html'
+    success_message = 'Success! New case is created!'
+    extra_context = {
+        'title': 'blackemployer - case create',
+        'image_form': ImageForm(),
+    }
+
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.company = Company.objects.get(self.request.META.get('HTTP_REFERRER'))
+        self.object.creator = self.request.user
+        self.success_url = reverse_lazy('djangofront:case_update', kwargs={'pk': self.object.pk})
+        return super().form_valid(form)
+
+
+class CaseDetail(PreviousPageMixin, LoginRequiredMixin, UpdateView):
+    model = Case
+    template_name = 'companies/case_detail.html'
+    form_class = CaseDetailForm
+    extra_context = {
+        'title': 'blackemployer - case detail',
+    }
+
     def get(self, request, *args, **kwargs):
-        from_url_str = request.META.get('HTTP_REFERER')
-        if '/companies/update/' in from_url_str:
-            company_id = int(from_url_str.split('/')[-2])
-            self.object = Case.objects.create(
-                company=Company.objects.get(id=company_id),
-                creator=request.user
-            )
-        return HttpResponseRedirect(reverse_lazy('djangofront:case_update', kwargs={'pk': self.object.pk}))
-
-
-class CaseDetail(PreviousPageMixin, DetailView):
-    pass
+        self.object = self.get_object()
+        self.extra_context.update({
+            'comment_list': self.object.comment_set.all(),
+            'tags_list': self.object.tags.all(),
+            'comment_form': CommentForm(),
+        })
+        return super().get(request, *args, **kwargs)
 
 
 class CaseUpdate(PreviousPageMixin, UpdateView):
@@ -185,7 +207,7 @@ class CaseUpdate(PreviousPageMixin, UpdateView):
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         self.extra_context.update({
-            'comment_list': self.object.comments,
+            'comment_list': self.object.comment_set.all(),
             'tags_list': self.object.tags.all(),
             'image_form': ImageForm(),
             'tag_form': TagForm(),
@@ -203,28 +225,14 @@ class CaseDelete(BaseDeleteView):
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        self.success_url = reverse_lazy("djangofront:company_update", kwargs={"pk": self.object.company.pk})
+        self.success_url = reverse_lazy('djangofront:company_update', kwargs={'pk': self.object.company.pk})
         return super().delete(self, request, *args, **kwargs)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 class UserCaseList(UserIsActiveMixin, LoginRequiredMixin, ListView):
     model = Case
-    extra_context = {"title": "My Case List"}
-    ordering = ["updated_at"]
+    extra_context = {'title': 'My Case List'}
+    ordering = ['updated_at']
 
     def get_queryset(self):
         return Case.objects.filter(creator=self.request.user, is_active=True)
@@ -279,5 +287,3 @@ def search_elems_with_ajax(request):
         'companies_list_html': companies_list_html,
         'cases_list_html': cases_list_html,
     })
-
-

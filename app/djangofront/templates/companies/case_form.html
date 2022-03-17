@@ -76,6 +76,20 @@
         </div>
     </form>
 
+    {#    comments#}
+    <p class="display-6 header-text fw-bold"> Comments:</p>
+    <div class="list-group">
+        {% if comment_list %}
+            {% for obj in comment_list %}
+                <div class="btn-group">
+                    <div class="list-group-item">
+                        <p>{{ obj.text }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
     {% include 'includes/inn_delete_modal.html' %}
     <script src="{{ STATIC_PREFIX }}js/delete_tag.js" defer></script>
 

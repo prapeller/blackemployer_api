@@ -67,11 +67,38 @@ class Company(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.slug
+        return f"{self.slug}"
+
+
+class Case(SeoModel):
+    slug = models.SlugField(unique=True, max_length=100, blank=True, null=True)
+    company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True)
+    creator = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    contacts = models.ManyToManyField(Contact, related_name="case_contacts")
+    case_date = models.DateTimeField(blank=True, null=True)
+    case_description = models.TextField(null=True, blank=True)
+    position = models.CharField(max_length=256, blank=True, null=True)
+    position_description = models.TextField(null=True, blank=True)
+    tags = models.ManyToManyField(Tag, related_name="case_tags")
+    images = ArrayField(models.FileField(upload_to=PathAndRename("images/cases/"),
+                                         validators=[FileExtensionValidator(["svg", "jpg", "jpeg", "png"])]),
+                        null=True, blank=True, default=default_1d_array
+                        )
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify("{0}-{1}".format(self.pk, self.position))
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.slug}"
 
 
 class Comment(models.Model):
-    company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True)
+    slug = models.SlugField(unique=True, max_length=100, blank=True, null=True)
+    case = models.ForeignKey(Case, on_delete=models.SET_NULL, null=True)
     creator = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -83,30 +110,13 @@ class Comment(models.Model):
                         null=True, blank=True, default=default_1d_array
                         )
 
+    def save(self, *args, **kwargs):
+        self.slug = slugify("{0}-comment-{1}".format(self.pk, self.case))
+        super().save(*args, **kwargs)
+
+
     def get_likes_quantity(self):
         return sum(self.likes)
 
     def __str__(self):
-        return "{0}_{1}_to_{2}".format(self.pk, self.text[:10], self.company.title)
-
-
-class Case(SeoModel):
-    company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True)
-    creator = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    is_active = models.BooleanField(default=True)
-    contacts = models.ManyToManyField(Contact, related_name="case_contacts")
-    case_date = models.DateTimeField(blank=True, null=True)
-    case_description = models.TextField(null=True, blank=True)
-    position = models.CharField(max_length=256, blank=True, null=True)
-    position_description = models.TextField(null=True, blank=True)
-    comments = models.ManyToManyField(Comment, related_name="case_comments")
-    tags = models.ManyToManyField(Tag, related_name="case_tags")
-    images = ArrayField(models.FileField(upload_to=PathAndRename("images/cases/"),
-                                         validators=[FileExtensionValidator(["svg", "jpg", "jpeg", "png"])]),
-                        null=True, blank=True, default=default_1d_array
-                        )
-
-    def __str__(self):
-        return "{0}_{1}_at_{2}".format(self.pk, self.position, self.company.title)
+        return f"{self.slug}"

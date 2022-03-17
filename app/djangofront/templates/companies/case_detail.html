@@ -4,14 +4,33 @@
 
     {#    header #}
     <div class="header">
-    <div class="back-btn-box">
-        <a class="back-btn-small" href="{{ previous_page_url }}"></a>
+        <div class="back-btn-box">
+            <a class="back-btn-small" href="{{ previous_page_url }}"></a>
+        </div>
+        <div class="header-text">
+            <h1 class="display-5 fw-bold">Case</h1>
+            <p>{{ object }}</p>
+        </div>
     </div>
-    <div class="header-text">
-        <h1 class="display-5 fw-bold">Case</h1>
-        <p>{{ object }}</p>
-    </div>
-</div>
+
+    {#  form #}
+    <form>
+        <div class="form-group">
+
+            <label class="form-label mt-4" for="{{ form.case_date.auto_id }}">{{ form.case_date.label }}</label>
+            {{ form.case_date }}
+
+            <label class="form-label mt-4" for="{{ form.case_description.auto_id }}">{{ form.case_description.label }}</label>
+            {{ form.case_description }}
+
+            <label class="form-label mt-4" for="{{ form.position.auto_id }}">{{ form.position.label }}</label>
+            {{ form.position }}
+
+            <label class="form-label mt-4" for="{{ form.position_description.auto_id }}">{{ form.position_description.label }}</label>
+            {{ form.position_description }}
+
+        </div>
+    </form>
 
     {# image box#}
     <div class="image-box">
@@ -34,22 +53,31 @@
         {% endif %}
     </div>
 
+{#    comments#}
+    <p class="display-6 header-text fw-bold"> Comments:</p>
+    <div class="list-group">
+        {% if comment_list %}
+            {% for obj in comment_list %}
+                <div class="btn-group">
+                    <div class="list-group-item">
+                        <p>{{ obj.text }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
     {#  comment form #}
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group">
 
+            <label class="form-label mt-4" for="{{ comment_form.text.auto_id }}">{{ comment_form.text.label }}</label>
+            {{ comment_form.text }}
+
             <label class="form-label mt-4" for="{{ comment_form.image.auto_id }}">{{ comment_form.image.label }}</label>
             {{ comment_form.image }}
 
-            <label class="form-label mt-4" for="{{ comment_form.title.auto_id }}">{{ comment_form.title.label }}</label>
-            {{ form.title }}
-
-            <label class="form-label mt-4" for="{{ comment_form.website.auto_id }}">{{ comment_form.website.label }}</label>
-            {{ form.website }}
-
-            <label class="form-label mt-4" for="{{ form.text.auto_id }}">{{ form.text.label }}</label>
-            {{ form.text }}
             <div class="text-center mt-4">
                 <input class="btn btn-primary" type="submit" value="Post">
             </div>

@@ -92,7 +92,6 @@ class CompanyDetailForm(CompanyForm):
             field.widget.attrs['readonly'] = True
 
 
-
 class CaseForm(forms.ModelForm):
     case_date = forms.DateTimeField(label='date', widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}))
     case_description = forms.CharField(label='description', widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '3'}))
@@ -103,6 +102,13 @@ class CaseForm(forms.ModelForm):
     class Meta:
         model = Case
         fields = ('case_date', 'case_description', 'position', 'position_description')
+
+
+class CaseDetailForm(CaseForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['readonly'] = True
 
 
 class CommentForm(forms.ModelForm):
@@ -126,3 +132,5 @@ class ImageForm(forms.Form):
 
     class Meta:
         fields = ('image',)
+
+
