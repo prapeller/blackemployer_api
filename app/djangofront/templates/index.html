@@ -9,7 +9,7 @@
             <!-- search companies and cases -->
             <form class="d-flex nav-item my-lg-0 mb-4" method="GET">
                 <input id="search_elems" class="form-control me-2" type="search" placeholder="Search" name="search_key">
-                <button class="btn btn-outline-success" type="submit">Search</button>
+{#                <button class="btn btn-outline-success" type="submit">Search</button>#}
             </form>
 
             <div class="search_elems">
@@ -19,6 +19,11 @@
                 <div class="search_cases">
                     {% include 'companies/includes/search_cases.html' %}
                 </div>
+            </div>
+
+            <!-- Add new object button -->
+            <div class="d-grid">
+                <a class="btn btn_add" href="{% url 'djangofront:company_create' %}" id="add"></a>
             </div>
 
         {% else %}

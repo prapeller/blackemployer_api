@@ -4,23 +4,23 @@
 
     {#    header #}
     <div class="header">
-        <div class="back-btn-box">
-            <a class="back-btn-small" href="{% url 'djangofront:company_list' %}"></a>
-        </div>
-        <div class="header-text">
-            <h1 class="display-5 fw-bold">Company</h1>
-            <p>{{ object }}</p>
-            {# image box#}
-            <div class="image-box">
-                {% if object.image %}
-                    <img class="image" src="{{ object.image.url }}" alt="ooops">
-                {% else %}
-                    <img class="image" src="{{ STATIC_PREFIX }}media/images/no_image.png" alt="ooops">
-                {% endif %}
-            </div>
-        </div>
+    <div class="back-btn-box">
+        <a class="back-btn-small" href="{{ previous_page_url }}"></a>
     </div>
+    <div class="header-text">
+        <h1 class="display-5 fw-bold">Company</h1>
+        <p>{{ object }}</p>
+    </div>
+</div>
 
+    {# image box#}
+    <div class="image-box">
+        {% if object.image %}
+            <img class="image" src="{{ object.image.url }}" alt="ooops">
+        {% else %}
+            <img class="image" src="{{ STATIC_PREFIX }}media/images/no_image.png" alt="ooops">
+        {% endif %}
+    </div>
 
     {#  form #}
     <form method="post" enctype="multipart/form-data">
@@ -46,8 +46,17 @@
 
     <!-- cases -->
     <p class="display-6 header-text fw-bold"> Cases:</p>
-    <div class="cases">
-        {% include 'companies/includes/cases.html' %}
+    <div class="list-group text-center">
+        {% if sub_object_list %}
+            {% for obj in sub_object_list %}
+                <div class="btn-group">
+                    <a href="{% url 'djangofront:case_update' obj.pk %}"
+                       class="list-group-item list-group-item-action">{{ obj }}</a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-center">No cases yet</p>
+        {% endif %}
     </div>
 
 
@@ -55,7 +64,5 @@
     <div class="d-grid">
         <a class="btn btn_add" href="{% url 'djangofront:case_create' %}" id="add"></a>
     </div>
-
-    {% include 'includes/inn_delete_modal.html' %}
 
 {% endblock %}

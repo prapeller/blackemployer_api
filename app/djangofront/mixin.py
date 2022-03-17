@@ -1,7 +1,8 @@
 from django.contrib.auth.decorators import user_passes_test, login_required
 from django.utils.decorators import method_decorator
 from django.views import View
-from django.views.generic.base import ContextMixin
+from django.views.generic.base import ContextMixin, RedirectView
+from django.conf import settings
 
 
 class UserIsStuffMixin(View):
@@ -32,6 +33,19 @@ class TitleContextMixin(ContextMixin):
     title = ''
 
     def get_context_data(self, **kwargs):
-        context = super(TitleContextMixin, self).get_context_data(**kwargs)
-        context['title'] = self.title
-        return context
+        self.extra_context.update({'title': self.title})
+        return super().get_context_data(**kwargs)
+
+
+class PreviousPageMixin(ContextMixin, View):
+    extra_context = {}
+
+    def get_context_data(self, **kwargs):
+        pre_previous_page_url = self.extra_context.get('previous_page_url')
+        previous_page_url = self.request.META.get('HTTP_REFERER')
+        current_page_url = settings.DOMAIN_NAME + self.request.META.get('PATH_INFO')
+        if current_page_url == previous_page_url:
+            self.extra_context.update({'previous_page_url': pre_previous_page_url})
+        else:
+            self.extra_context.update({'previous_page_url': previous_page_url})
+        return super().get_context_data(**kwargs)

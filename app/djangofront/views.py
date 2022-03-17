@@ -1,21 +1,23 @@
-from django.contrib.auth import login
-from django.contrib.auth.decorators import user_passes_test, login_required
+from django.contrib.auth import login, get_user_model
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LoginView as Login, LogoutView as Logout
+from django.contrib.auth.views import LoginView as Login, LogoutView as Logout, PasswordChangeView as PasswordChange
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.exceptions import ValidationError
+from django.db.models import Q
+from django.http import JsonResponse
 from django.shortcuts import render, HttpResponseRedirect
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView
-from django.views.generic.edit import BaseDeleteView
 from django.views.generic.detail import DetailView
-from django.http import JsonResponse
-from django.db.models import Q
+from django.views.generic.edit import BaseDeleteView, ProcessFormView, BaseFormView
 
 from companies.models import Company, Case
 from content.models import Tag
-from djangofront.forms import UserLoginForm, UserRegisterForm, CompanyForm, CaseForm, ImageForm, TagForm
-from djangofront.mixin import UserIsNotNoneMixin, UserIsActiveMixin, UserIsSuperuserMixin
+from djangofront.forms import (UserLoginForm, UserRegisterForm, UserProfileForm,
+                               CompanyForm, CaseForm, ImageForm, TagForm, PasswordChangeForm, CompanyDetailForm)
+from djangofront.mixin import UserIsNotNoneMixin, UserIsActiveMixin, UserIsSuperuserMixin, PreviousPageMixin
 
 
 @user_passes_test(lambda u: u is not None)
@@ -30,7 +32,7 @@ def verification(request):
     return render(request, "verification.html", context)
 
 
-class LoginView(UserIsNotNoneMixin, Login):
+class LoginView(PreviousPageMixin, UserIsNotNoneMixin, Login):
     form_class = UserLoginForm
     template_name = "login.html"
     success_url = reverse_lazy("djangofront:index")
@@ -41,11 +43,23 @@ class LoginView(UserIsNotNoneMixin, Login):
         return HttpResponseRedirect(self.success_url)
 
 
-class LogoutView(UserIsNotNoneMixin, LoginRequiredMixin, Logout):
+class ProfileView(PreviousPageMixin, LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    model = get_user_model()
+    form_class = UserProfileForm
+    template_name = "profile.html"
+    success_message = "Your profile was updated successfully!"
+
+    def form_valid(self, form):
+        self.object = form.save()
+        self.success_url = reverse_lazy("djangofront:profile", kwargs={"pk": self.object.pk})
+        return super().form_valid(form)
+
+
+class LogoutView(LoginRequiredMixin, Logout):
     next_page = reverse_lazy("djangofront:index")
 
 
-class RegisterView(UserIsNotNoneMixin, SuccessMessageMixin, CreateView):
+class RegisterView(PreviousPageMixin, SuccessMessageMixin, CreateView):
     form_class = UserRegisterForm
     template_name = "register.html"
     success_url = reverse_lazy("djangofront:login")
@@ -57,29 +71,39 @@ class RegisterView(UserIsNotNoneMixin, SuccessMessageMixin, CreateView):
         return HttpResponseRedirect(reverse_lazy("djangofront:login"))
 
 
-class CompanyList(UserIsActiveMixin, LoginRequiredMixin, ListView):
+class PasswordChangeView(PreviousPageMixin, PasswordChange):
+    form_class = PasswordChangeForm
+    success_url = reverse_lazy("djangofront:index")
+    template_name = "password_change.html"
+
+
+class CompanyList(PreviousPageMixin, LoginRequiredMixin, ListView):
     model = Company
-    extra_context = {"title": "Companies List"}
+    extra_context = {"title": "blackemployer companies list"}
     ordering = ["title"]
 
     def get_queryset(self):
         return Company.objects.filter(is_active=True)
 
 
-class CompanyCreate(UserIsActiveMixin, LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class UserCompanyList(PreviousPageMixin, LoginRequiredMixin, ListView):
+    model = Company
+    template_name = 'companies/company_list_user.html'
+    extra_context = {"title": "blackemployer my companies list"}
+    ordering = ["title"]
+
+    def get_queryset(self):
+        return Company.objects.filter(creator=self.request.user, is_active=True)
+
+
+class CompanyCreate(PreviousPageMixin, LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Company
     form_class = CompanyForm
-    # fields = ("image", "title", "text")
     template_name = "companies/company_form.html"
     success_message = "Success! New company is created!"
     extra_context = {
-        "title": "blackemployer - company"
+        "title": "blackemployer - company create"
     }
-
-    # def get_context_data(self, **kwargs):
-    #     return {
-    #         "form": CompanyCreateForm(instance=self.request.user),
-    #     }
 
     def form_valid(self, form):
         self.object = form.save()
@@ -88,19 +112,26 @@ class CompanyCreate(UserIsActiveMixin, LoginRequiredMixin, SuccessMessageMixin, 
         return super().form_valid(form)
 
 
-class CompanyDetail(UserIsActiveMixin, LoginRequiredMixin, DetailView):
+class CompanyDetail(PreviousPageMixin, LoginRequiredMixin, UpdateView):
     model = Company
     template_name = "companies/company_detail.html"
+    form_class = CompanyDetailForm
     extra_context = {
-            "title": "blackemployer - company"
-        }
+        "title": "blackemployer - company detail",
+    }
 
-class CompanyUpdate(UserIsActiveMixin, LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.extra_context.update({"sub_object_list": Case.objects.filter(company=self.object)})
+        return super().get(request, *args, **kwargs)
+
+
+class CompanyUpdate(PreviousPageMixin, LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Company
     template_name = "companies/company_form.html"
     form_class = CompanyForm
     extra_context = {
-        "title": "blackemployer - company"
+        "title": "blackemployer - company update"
     }
 
     def get(self, request, *args, **kwargs):
@@ -114,7 +145,7 @@ class CompanyUpdate(UserIsActiveMixin, LoginRequiredMixin, SuccessMessageMixin, 
         return super().form_valid(form)
 
 
-class CompanyDelete(UserIsSuperuserMixin, BaseDeleteView):
+class CompanyDelete(BaseDeleteView):
     model = Company
 
     def post(self, request, *args, **kwargs):
@@ -124,11 +155,11 @@ class CompanyDelete(UserIsSuperuserMixin, BaseDeleteView):
         return HttpResponseRedirect(self.success_url)
 
 
-class CaseList(ListView):
+class CaseList(LoginRequiredMixin, ListView):
     pass
 
 
-class CaseCreate(UserIsActiveMixin, LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class CaseCreate(PreviousPageMixin, UserIsActiveMixin, LoginRequiredMixin, SuccessMessageMixin, CreateView):
     def get(self, request, *args, **kwargs):
         from_url_str = request.META.get('HTTP_REFERER')
         if '/companies/update/' in from_url_str:
@@ -140,11 +171,11 @@ class CaseCreate(UserIsActiveMixin, LoginRequiredMixin, SuccessMessageMixin, Cre
         return HttpResponseRedirect(reverse_lazy('djangofront:case_update', kwargs={'pk': self.object.pk}))
 
 
-class CaseDetail(DetailView):
+class CaseDetail(PreviousPageMixin, DetailView):
     pass
 
 
-class CaseUpdate(UpdateView):
+class CaseUpdate(PreviousPageMixin, UpdateView):
     model = Case
     form_class = CaseForm
     extra_context = {
@@ -176,13 +207,18 @@ class CaseDelete(BaseDeleteView):
         return super().delete(self, request, *args, **kwargs)
 
 
-class UserCompanyList(UserIsActiveMixin, LoginRequiredMixin, ListView):
-    model = Company
-    extra_context = {"title": "My Companies List"}
-    ordering = ["title"]
 
-    def get_queryset(self):
-        return Company.objects.filter(creator=self.request.user, is_active=True)
+
+
+
+
+
+
+
+
+
+
+
 
 
 class UserCaseList(UserIsActiveMixin, LoginRequiredMixin, ListView):
@@ -226,7 +262,8 @@ def search_elems_with_ajax(request):
     cases_list = []
     if search_str:
         companies_list = Company.objects.filter(
-            Q(title__icontains=search_str) | Q(slug__icontains=search_str) | Q(website__icontains=search_str) | Q(text__icontains=search_str)
+            Q(title__icontains=search_str) | Q(slug__icontains=search_str) | Q(website__icontains=search_str) | Q(
+                text__icontains=search_str)
         )
         cases_list = Case.objects.filter(
             Q(case_description__icontains=search_str) | Q(position__icontains=search_str) | Q(position_description__icontains=search_str)
@@ -242,3 +279,5 @@ def search_elems_with_ajax(request):
         'companies_list_html': companies_list_html,
         'cases_list_html': cases_list_html,
     })
+
+

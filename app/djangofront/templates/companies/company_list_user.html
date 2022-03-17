@@ -8,26 +8,23 @@
             <a class="back-btn-small" href="{{ previous_page_url }}"></a>
         </div>
         <div class="header-text">
-            <h1 class="display-5 fw-bold">Companies:</h1>
+            <h1 class="display-5 fw-bold">My Companies:</h1>
             <p>{{ object }}</p>
         </div>
     </div>
 
-    <!-- Search -->
-    {#    <form class="d-flex nav-item my-lg-0 mb-4" method="GET">#}
-    {#        <input class="form-control me-2" type="search" placeholder="Search" name="search_key">#}
-    {#        <button class="btn btn-outline-success" type="submit">Search</button>#}
-    {#    </form>#}
+    {#    user_companies #}
+    <div class="companies">
+        {% include 'companies/includes/user_companies.html' %}
+    </div>
 
     <!-- Add new object button -->
+    <p class="display-6 mt-5 text-center"></p>
     <div class="d-grid">
         <a class="btn btn_add" href="{% url 'djangofront:company_create' %}" id="add"></a>
     </div>
 
 
-    <!-- companies -->
-    <div class="companies">
-        {% include 'companies/includes/companies.html' %}
-    </div>
+
 
 {% endblock %}

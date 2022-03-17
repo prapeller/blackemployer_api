@@ -2,7 +2,7 @@
     {% if sub_object_list %}
         {% for obj in sub_object_list %}
             <div class="btn-group">
-                <a href="{% url 'djangofront:case_update' obj.pk %}"
+                <a href="{% url 'djangofront:case_detail' obj.pk %}"
                    class="list-group-item list-group-item-action">{{ obj }}</a>
             </div>
         {% endfor %}

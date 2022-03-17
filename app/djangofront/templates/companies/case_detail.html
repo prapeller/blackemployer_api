@@ -4,21 +4,22 @@
 
     {#    header #}
     <div class="header">
-        <div class="back-btn-box">
-            <a class="back-btn-small" href="{% url 'djangofront:company_list' %}"></a>
-        </div>
-        <div class="header-text">
-            <h1 class="display-5 fw-bold">Case</h1>
-            <p>{{ object }}</p>
-            {# image box#}
-            <div class="image-box">
-                {% if object.image %}
-                    <img class="image" src="{{ object.image.url }}" alt="ooops">
-                {% else %}
-                    <img class="image" src="{{ STATIC_PREFIX }}media/images/no_image.png" alt="ooops">
-                {% endif %}
-            </div>
-        </div>
+    <div class="back-btn-box">
+        <a class="back-btn-small" href="{{ previous_page_url }}"></a>
+    </div>
+    <div class="header-text">
+        <h1 class="display-5 fw-bold">Case</h1>
+        <p>{{ object }}</p>
+    </div>
+</div>
+
+    {# image box#}
+    <div class="image-box">
+        {% if object.image %}
+            <img class="image" src="{{ object.image.url }}" alt="ooops">
+        {% else %}
+            <img class="image" src="{{ STATIC_PREFIX }}media/images/no_image.png" alt="ooops">
+        {% endif %}
     </div>
 
     <!-- tags -->

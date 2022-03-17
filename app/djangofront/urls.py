@@ -1,7 +1,7 @@
 from django.urls import path, include
 
 from djangofront.views import (
-    index, verification, LoginView, RegisterView, LogoutView,
+    index, verification, LoginView, RegisterView, PasswordChangeView, LogoutView, ProfileView,
     CompanyList, CompanyCreate, CompanyUpdate, CompanyDetail, CompanyDelete,
     CaseList, CaseCreate, CaseDetail, CaseUpdate, CaseDelete,
     UserCaseList, UserCompanyList,
@@ -20,7 +20,7 @@ urlpatterns = [
     # users/password_reset/done/ [name='password_reset_done']
     # users/reset/<uidb64>/<token>/ [name='password_reset_confirm']
     # users/reset/done/ [name='password_reset_complete']
-    # path('', include('django.contrib.auth.urls')),
+    # path('djangofront/profile/', include('django.contrib.auth.urls')),
 
     path('', index, name='index'),
     path('djangofront/verification/', verification, name='verification'),
@@ -29,6 +29,8 @@ urlpatterns = [
     path('djangofront/register/', RegisterView.as_view(), name='register'),
     path('djangofront/login/', LoginView.as_view(), name='login'),
     path('djangofront/logout/', LogoutView.as_view(), name='logout'),
+    path('djangofront/profile/<int:pk>/', ProfileView.as_view(), name='profile'),
+    path('djangofront/profile/password_change/', PasswordChangeView.as_view(), name='password_change'),
 
     path('djangofront/companies/', CompanyList.as_view(), name='company_list'),
     path('djangofront/companies/create/', CompanyCreate.as_view(), name='company_create'),

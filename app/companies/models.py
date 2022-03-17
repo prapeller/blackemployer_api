@@ -32,7 +32,7 @@ def default_1d_array():
 
 
 def default_1d_array_of_strings():
-    return ["",]
+    return ["", ]
 
 
 class Contact(models.Model):
@@ -63,10 +63,8 @@ class Company(models.Model):
                              validators=[FileExtensionValidator(["svg", "jpg", "jpeg", "png"])])
 
     def save(self, *args, **kwargs):
+        self.slug = slugify("{0}-{1}".format(self.pk, self.title))
         super().save(*args, **kwargs)
-        if not self.slug:
-            self.slug = slugify("{0}-{1}".format(self.pk, self.title))
-            super().save(*args, **kwargs)
 
     def __str__(self):
         return self.slug

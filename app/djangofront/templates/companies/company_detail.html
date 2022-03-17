@@ -4,12 +4,15 @@
 
     {#    header #}
     <div class="header">
-        <div class="back-btn-box">
-            <a class="back-btn-small" href="{% url 'djangofront:company_list' %}"></a>
-        </div>
-        <div class="header-text">
-            <h1 class="display-5 fw-bold">Company</h1>
-            <p>{{ object }}</p>
+    <div class="back-btn-box">
+        <a class="back-btn-small" href="{{ previous_page_url }}"></a>
+    </div>
+    <div class="header-text">
+        <h1 class="display-5 fw-bold">Company</h1>
+        <p>{{ object }}</p>
+    </div>
+</div>
+
             {# image box#}
             <div class="image-box">
                 {% if object.image %}
@@ -18,17 +21,11 @@
                     <img class="image" src="{{ STATIC_PREFIX }}media/images/no_image.png" alt="ooops">
                 {% endif %}
             </div>
-        </div>
-    </div>
-
 
     {#  form #}
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group">
-
-            <label class="form-label mt-4" for="{{ form.image.auto_id }}">{{ form.image.label }}</label>
-            {{ form.image }}
 
             <label class="form-label mt-4" for="{{ form.title.auto_id }}">{{ form.title.label }}</label>
             {{ form.title }}
@@ -38,24 +35,28 @@
 
             <label class="form-label mt-4" for="{{ form.text.auto_id }}">{{ form.text.label }}</label>
             {{ form.text }}
-            <div class="text-center mt-4">
-                <input class="btn btn-primary" type="submit" value="Ok">
-            </div>
         </div>
     </form>
 
     <!-- cases -->
-    <p class="display-6 header-text fw-bold"> Cases:</p>
-    <div class="cases">
-        {% include 'companies/includes/cases.html' %}
-    </div>
+    <p class="display-6 header-text fw-bold mt-5"> Cases:</p>
+    <div class="list-group text-center">
+    {% if sub_object_list %}
+        {% for obj in sub_object_list %}
+            <div class="btn-group">
+                <a href="{% url 'djangofront:case_detail' obj.pk %}"
+                   class="list-group-item list-group-item-action">{{ obj }}</a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-center">No cases yet</p>
+    {% endif %}
+</div>
 
 
     <!-- add case -->
     <div class="d-grid">
         <a class="btn btn_add" href="{% url 'djangofront:case_create' %}" id="add"></a>
     </div>
-
-    {% include 'includes/inn_delete_modal.html' %}
 
 {% endblock %}

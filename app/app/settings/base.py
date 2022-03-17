@@ -168,5 +168,5 @@ REST_FRAMEWORK = {
 }
 
 AUTH_USER_MODEL = 'users.User'
-LOGIN_URL = 'djangofront/login/'
-LOGIN_REDIRECT_URL = ''
+LOGIN_URL = '/djangofront/login/'
+# LOGIN_REDIRECT_URL = ''
