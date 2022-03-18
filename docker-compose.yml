@@ -1,5 +1,4 @@
 #docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' db
-
 #docker-compose run --rm app sh -c "python manage.py test"
 
 version: '3.9'
@@ -32,8 +31,8 @@ services:
     command: >
       sh -c "python manage.py makemigrations
       && python manage.py migrate
-      && python manage.py collectstatic
       && gunicorn app.wsgi:application -b 0.0.0.0:8000"
+#      && python manage.py collectstatic
     environment:
       DJANGO_SETTINGS_MODULE: 'app.settings.prod_postgres'
     depends_on:
@@ -50,16 +49,6 @@ services:
       - app
     volumes:
       - static:/static
-
-#  certbot:
-#    image: certbot/certbot
-#    depends_on:
-#      - nginx
-#    container_name: cerbot
-#    volumes:
-#      - etc-letsencrypt:/etc/letsencrypt
-#      - www-thml:/var/www/html
-#    command: certonly --webroot --webroot-path=/var/www/html --email
 
 volumes:
   static:
