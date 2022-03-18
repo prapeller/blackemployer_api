@@ -1,8 +1,6 @@
 from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm as PasswordChange, AuthenticationForm
 from django.contrib.auth.forms import forms
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from django.utils.translation import gettext_lazy as _
 
 from companies.models import Company, Case, Comment
 

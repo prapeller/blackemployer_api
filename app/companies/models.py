@@ -1,55 +1,15 @@
-import os
-from uuid import uuid4
-
 from django.contrib.auth import get_user_model
+from django.contrib.postgres.fields import ArrayField
 from django.core.validators import FileExtensionValidator
 from django.db import models
-from django.utils.deconstruct import deconstructible
-from django.contrib.postgres.fields import ArrayField
 
-from content.models import Like, Tag
 from shared.models import SeoModel
+from content.models import Tag, Like
+from utils.model_utils import PathAndRename, default_1d_array, default_1d_array_of_strings
 from utils.slug import slugify
 
 
-@deconstructible
-class PathAndRename(object):
-
-    def __init__(self, path):
-        self.sub_path = path
-
-    def __call__(self, instance, filename):
-        ext = filename.split(".")[-1]
-        if instance.pk:
-            filename = f"{instance.pk}_{instance}.{ext}"
-        else:
-            filename = "{}.{}".format(uuid4().hex, ext)
-        return os.path.join(self.sub_path, filename)
-
-
-def default_1d_array():
-    return []
-
-
-def default_1d_array_of_strings():
-    return ["", ]
-
-
-class Contact(models.Model):
-    creator = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    is_active = models.BooleanField(default=True)
-    name = models.CharField(max_length=128, null=True, blank=True)
-    phones = ArrayField(models.CharField(max_length=128, null=True, blank=True), default=default_1d_array_of_strings)
-    emails = ArrayField(models.CharField(max_length=128, null=True, blank=True), default=default_1d_array_of_strings)
-    telegram = models.CharField(max_length=128, null=True, blank=True)
-    skype = models.CharField(max_length=128, null=True, blank=True)
-    slack = models.CharField(max_length=128, null=True, blank=True)
-    other = models.CharField(max_length=128, null=True, blank=True)
-
-
-class Company(models.Model):
+class Company(SeoModel):
     title = models.CharField(max_length=120)
     slug = models.SlugField(unique=True, max_length=100, blank=True, null=True)
     creator = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True)
@@ -68,6 +28,28 @@ class Company(models.Model):
 
     def __str__(self):
         return f"{self.slug}"
+
+    def delete(self, using=None, keep_parents=False):
+        self.is_active = False
+        self.save()
+
+
+class Contact(models.Model):
+    creator = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    name = models.CharField(max_length=128, null=True, blank=True)
+    phones = ArrayField(models.CharField(max_length=128, null=True, blank=True), default=default_1d_array_of_strings)
+    emails = ArrayField(models.CharField(max_length=128, null=True, blank=True), default=default_1d_array_of_strings)
+    telegram = models.CharField(max_length=128, null=True, blank=True)
+    skype = models.CharField(max_length=128, null=True, blank=True)
+    slack = models.CharField(max_length=128, null=True, blank=True)
+    other = models.CharField(max_length=128, null=True, blank=True)
+
+    def delete(self, using=None, keep_parents=False):
+        self.is_active = False
+        self.save()
 
 
 class Case(SeoModel):
@@ -92,13 +74,17 @@ class Case(SeoModel):
         self.slug = slugify("{0}-{1}".format(self.pk, self.position))
         super().save(*args, **kwargs)
 
+    def delete(self, using=None, keep_parents=False):
+        self.is_active = False
+        self.save()
+
     def __str__(self):
         return f"{self.slug}"
 
 
-class Comment(models.Model):
+class Comment(SeoModel):
     slug = models.SlugField(unique=True, max_length=100, blank=True, null=True)
-    case = models.ForeignKey(Case, on_delete=models.SET_NULL, null=True)
+    case = models.ForeignKey(Case, on_delete=models.SET_NULL, null=True, default=None)
     creator = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -110,13 +96,16 @@ class Comment(models.Model):
                         null=True, blank=True, default=default_1d_array
                         )
 
-    def save(self, *args, **kwargs):
-        self.slug = slugify("{0}-comment-{1}".format(self.pk, self.case))
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     self.slug = slugify("{0}-comment-{1}".format(self.pk, self.case))
+    #     super().save(*args, **kwargs)
 
+    def delete(self, using=None, keep_parents=False):
+        self.is_active = False
+        self.save()
 
     def get_likes_quantity(self):
         return sum(self.likes)
 
     def __str__(self):
-        return f"{self.slug}"
+        return "{0}-comment-{1}".format(self.pk, self.case)

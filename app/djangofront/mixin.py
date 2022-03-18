@@ -49,3 +49,18 @@ class PreviousPageMixin(ContextMixin, View):
         else:
             self.extra_context.update({'previous_page_url': previous_page_url})
         return super().get_context_data(**kwargs)
+
+
+class SessionCacheMixin(View):
+
+    def dispatch(self, request, *args, **kwargs):
+        # current_page_url = settings.DOMAIN_NAME + self.request.META.get('PATH_INFO')
+        # if any(x in current_page_url for x in ['detail/', 'update/']):
+        url_name = request.resolver_match.url_name
+        obj_id = request.resolver_match.kwargs.get('pk')
+        if 'company' in url_name:
+            self.request.session['company_id'] = obj_id
+        if 'case' in url_name:
+            self.request.session['case_id'] = obj_id
+
+        return super().dispatch(request, *args, **kwargs)

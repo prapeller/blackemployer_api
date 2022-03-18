@@ -3,15 +3,13 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView as Login, LogoutView as Logout, PasswordChangeView as PasswordChange
 from django.contrib.messages.views import SuccessMessageMixin
-from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render, HttpResponseRedirect
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, UpdateView
-from django.views.generic.detail import DetailView
-from django.views.generic.edit import BaseDeleteView, ProcessFormView, BaseFormView
+from django.views.generic import ListView, CreateView, UpdateView, DetailView
+from django.views.generic.edit import BaseDeleteView
 
 from companies.models import Company, Case, Comment
 from content.models import Tag
@@ -19,7 +17,7 @@ from djangofront.forms import (UserLoginForm, UserRegisterForm, UserProfileForm,
                                CompanyForm, CaseForm, ImageForm, TagForm, PasswordChangeForm,
                                CompanyDetailForm, CaseDetailForm,
                                CommentForm)
-from djangofront.mixin import UserIsNotNoneMixin, UserIsActiveMixin, UserIsSuperuserMixin, PreviousPageMixin
+from djangofront.mixin import UserIsNotNoneMixin, UserIsActiveMixin, PreviousPageMixin, SessionCacheMixin
 
 
 @user_passes_test(lambda u: u is not None)
@@ -114,7 +112,7 @@ class CompanyCreate(PreviousPageMixin, LoginRequiredMixin, SuccessMessageMixin, 
         return super().form_valid(form)
 
 
-class CompanyDetail(PreviousPageMixin, LoginRequiredMixin, UpdateView):
+class CompanyDetail(SessionCacheMixin, PreviousPageMixin, LoginRequiredMixin, UpdateView):
     model = Company
     template_name = 'companies/company_detail.html'
     form_class = CompanyDetailForm
@@ -128,7 +126,7 @@ class CompanyDetail(PreviousPageMixin, LoginRequiredMixin, UpdateView):
         return super().get(request, *args, **kwargs)
 
 
-class CompanyUpdate(PreviousPageMixin, LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+class CompanyUpdate(SessionCacheMixin, PreviousPageMixin, LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Company
     template_name = 'companies/company_form.html'
     form_class = CompanyForm
@@ -169,17 +167,18 @@ class CaseCreate(PreviousPageMixin, LoginRequiredMixin, SuccessMessageMixin, Cre
     extra_context = {
         'title': 'blackemployer - case create',
         'image_form': ImageForm(),
+        'tag_form': TagForm(),
     }
 
     def form_valid(self, form):
         self.object = form.save()
-        self.object.company = Company.objects.get(self.request.META.get('HTTP_REFERRER'))
+        self.object.company = Company.objects.get(id=self.request.session.get('company_id'))
         self.object.creator = self.request.user
         self.success_url = reverse_lazy('djangofront:case_update', kwargs={'pk': self.object.pk})
         return super().form_valid(form)
 
 
-class CaseDetail(PreviousPageMixin, LoginRequiredMixin, UpdateView):
+class CaseDetail(SessionCacheMixin, PreviousPageMixin, LoginRequiredMixin, UpdateView):
     model = Case
     template_name = 'companies/case_detail.html'
     form_class = CaseDetailForm
@@ -190,14 +189,20 @@ class CaseDetail(PreviousPageMixin, LoginRequiredMixin, UpdateView):
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         self.extra_context.update({
-            'comment_list': self.object.comment_set.all(),
+            'comment_list': self.object.comment_set.all().filter(is_active=True).order_by('created_at'),
             'tags_list': self.object.tags.all(),
             'comment_form': CommentForm(),
         })
         return super().get(request, *args, **kwargs)
 
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if request.POST.get('text'):
+            Comment.objects.create(case=self.object, creator=request.user, text=request.POST.get('text'))
+        return HttpResponseRedirect(reverse_lazy('djangofront:case_detail', kwargs={'pk': self.object.pk}))
 
-class CaseUpdate(PreviousPageMixin, UpdateView):
+
+class CaseUpdate(SessionCacheMixin, PreviousPageMixin, UpdateView):
     model = Case
     form_class = CaseForm
     extra_context = {
@@ -225,8 +230,9 @@ class CaseDelete(BaseDeleteView):
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
+        self.object.delete()
         self.success_url = reverse_lazy('djangofront:company_update', kwargs={'pk': self.object.company.pk})
-        return super().delete(self, request, *args, **kwargs)
+        return HttpResponseRedirect(self.success_url)
 
 
 class UserCaseList(UserIsActiveMixin, LoginRequiredMixin, ListView):

@@ -53,7 +53,10 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
 
     def __str__(self):
-        return self.username
+        if self.username != self.email:
+            return self.username
+        else:
+            return f'{self.date_joined}'
 
     def set_activation_key(self):
         salt = hashlib.sha1(str(random()).encode('utf8')).hexdigest()[:6]

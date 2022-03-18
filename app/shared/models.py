@@ -1,4 +1,8 @@
 from django.db import models
+from django.contrib.auth import get_user_model
+from django.contrib.postgres.fields import ArrayField
+
+from utils.model_utils import default_1d_array_of_strings
 
 
 class SeoModel(models.Model):

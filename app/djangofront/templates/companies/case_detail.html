@@ -36,37 +36,36 @@
     <div class="image-box">
         {% if object.image %}
             <img class="image" src="{{ object.image.url }}" alt="ooops">
-        {% else %}
-            <img class="image" src="{{ STATIC_PREFIX }}media/images/no_image.png" alt="ooops">
         {% endif %}
     </div>
 
     <!-- tags -->
-    <p class="display-6 header-text fw-bold"> Tags:</p>
-    <div class="list-group">
-        {% if object_tag_list %}
+    {% if object_tag_list %}
+        <p class="display-6 header-text fw-bold"> Tags:</p>
+        <div class="list-group">
             {% for obj in object_tag_list %}
                 <div class="btn-group">
                     <a href="{% url 'djangofront:case_update' obj.pk %}" class="list-group-item">{{ obj }}</a>
                 </div>
             {% endfor %}
-        {% endif %}
-    </div>
+        </div>
+    {% endif %}
 
-{#    comments#}
-    <p class="display-6 header-text fw-bold"> Comments:</p>
-    <div class="list-group">
-        {% if comment_list %}
+    {#    comments#}
+    {% if comment_list %}
+        <p class="display-6 header-text fw-bold"> Comments:</p>
+        <div class="list-group">
             {% for obj in comment_list %}
-                <div class="btn-group">
-                    <div class="list-group-item">
-                        <p>{{ obj.text }}</p>
-                    </div>
-                </div>
+                {% if obj.creator == user %}
+                    {% include 'companies/includes/comment_user.html' %}
+                {% else %}
+                    {% include 'companies/includes/comment_other.html' %}
+                {% endif %}
             {% endfor %}
-        {% endif %}
-    </div>
+        </div>
+    {% endif %}
 
+    <p class="display-6 header-text fw-bold mt-5"> Add comment:</p>
     {#  comment form #}
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
@@ -79,7 +78,7 @@
             {{ comment_form.image }}
 
             <div class="text-center mt-4">
-                <input class="btn btn-primary" type="submit" value="Post">
+                <input class="btn btn-primary" type="submit" value="Add Comment">
             </div>
         </div>
     </form>

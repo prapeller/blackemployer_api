@@ -4,14 +4,14 @@
 
     {#    header #}
     <div class="header">
-    <div class="back-btn-box">
-        <a class="back-btn-small" href="{{ previous_page_url }}"></a>
+        <div class="back-btn-box">
+            <a class="back-btn-small" href="{{ previous_page_url }}"></a>
+        </div>
+        <div class="header-text">
+            <h1 class="display-5 fw-bold">Company</h1>
+            <p>{{ object }}</p>
+        </div>
     </div>
-    <div class="header-text">
-        <h1 class="display-5 fw-bold">Company</h1>
-        <p>{{ object }}</p>
-    </div>
-</div>
 
     {# image box#}
     <div class="image-box">
@@ -59,10 +59,12 @@
         {% endif %}
     </div>
 
-
-    <!-- add case -->
-    <div class="d-grid">
-        <a class="btn btn_add" href="{% url 'djangofront:case_create' %}" id="add"></a>
-    </div>
+    {% if object %}
+    <p class="display-6 header-text fw-bold"> Add Case:</p>
+        <!-- add case -->
+        <div class="d-grid">
+            <a class="btn btn_add" href="{% url 'djangofront:case_create' %}" id="add"></a>
+        </div>
+    {% endif %}
 
 {% endblock %}
