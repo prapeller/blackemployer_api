@@ -17,10 +17,11 @@ STATICFILES_DIRS = (
     BASE_DIR.parent / 'static/',
 )
 
-MEDIA_ROOT = BASE_DIR / 'static/media/'
+MEDIA_ROOT = BASE_DIR.parent / 'static/media/'
 
 REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'].append(
-        'rest_framework.renderers.BrowsableAPIRenderer')
+        'rest_framework.renderers.BrowsableAPIRenderer',
+)
 
 
 load_dotenv(BASE_DIR / 'app/settings/.env')
