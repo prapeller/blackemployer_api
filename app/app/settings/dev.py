@@ -13,11 +13,8 @@ INSTALLED_APPS += [
     'django_extensions',
 ]
 
-STATICFILES_DIRS = (
-    BASE_DIR.parent / 'static/',
-)
 
-MEDIA_ROOT = BASE_DIR.parent / 'static/media/'
+MEDIA_ROOT = BASE_DIR / 'static/media/'
 
 REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'].append(
         'rest_framework.renderers.BrowsableAPIRenderer',
