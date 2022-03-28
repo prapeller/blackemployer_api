@@ -77,12 +77,12 @@ docker-compose up
 
 ```
 git clone git@github.com:prapeller/blackemployer_api.git
-bash blackemployer_api/scripts/linux/init_dev.sh
+sudo chmod 777 blackemployer_api
+cd blackemployer_api/scripts/linux
+bash ./init_dev.sh
 cd blackemployer_api
 python3 -m venv venv
 source venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
 cd app/
 python manage.py runserver --settings="app.settings.dev_postgres"
 ```

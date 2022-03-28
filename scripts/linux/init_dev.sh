@@ -8,8 +8,9 @@ echo "======================================================"
 
 #pushd $(pwd) >/dev/null
 
-./install_docker.sh
-./install_postgresql.sh
-./dp_create.sh
+bash ./install_docker.sh
+bash ./install_postgresql.sh
+bash ./db_create.sh
+bash ./migrate.sh
 
 #popd >/dev/null
