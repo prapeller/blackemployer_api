@@ -21,14 +21,10 @@ cd /
 git clone git@github.com:prapeller/blackemployer_api.git
 cd /blackemployer_api/scripts/linux
 bash install_docker.sh
+cd ../../ngnx
 ```
-
-make 4 files locally
-
-first 3 are with your ssl cert info for pasting to /blackemployer.com/nginx/
-1) blackemployer.com.crt 
-
-with content as follows >> 
+make 3 files here with ssl certificate info
+1) blackemployer.com.crt
 ```
 -----BEGIN CERTIFICATE-----
 your ssl cert goes here 
@@ -40,11 +36,7 @@ your intermidiate cert goes here
 your root cert goes here
 -----END CERTIFICATE-----
 ```
-
-2) blackemployer.com.key << 
-
-with content as follows >> 
-
+2) blackemployer.com.key
 ```
 -----BEGIN RSA PRIVATE KEY-----
 your key goes here
@@ -52,23 +44,15 @@ your key goes here
 
 ```
 3) ca.crt
-
-with content as follows >> 
 ```
 -----BEGIN CERTIFICATE-----
 your root cert goes here
 -----END CERTIFICATE-----
+```
+make .env file with environment variables
+```
+cp /blackemployer_api/app/settings/.env.example /blackemployer_api/app/settings/.env
 
-```
-the 4th file with enviroment variables for pasting to /blackemployer_api/app/settings/
-4) .env
-with content based on .env.example file that you can find here >> 
-
-```
-nano /blackemployer_api/app/settings/.env.example
-```
-and finally run docker-compose file
-```
 cd /blackemployer_api/
 docker-compose up
 ```
@@ -87,9 +71,11 @@ source venv/bin/activate
 
 pip install --upgrade pip
 pip install -r requirements.txt
-python manage.py migrate
-python manage.py collectstatic
-
+cp app/settings/.env.example app/settings/.env
+```
+fill .env with your email host variables
+```
 cd app/
+python manage.py migrate --settings="app.settings.dev_postgres"
 python manage.py runserver --settings="app.settings.dev_postgres"
 ```
