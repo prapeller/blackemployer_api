@@ -21,7 +21,7 @@ cd /
 git clone git@github.com:prapeller/blackemployer_api.git
 cd /blackemployer_api/scripts/linux
 bash install_docker.sh
-cd ../../ngnx
+cd ../../nginx
 ```
 make 3 files here with ssl certificate info
 1) blackemployer.com.crt
@@ -49,9 +49,9 @@ your key goes here
 your root cert goes here
 -----END CERTIFICATE-----
 ```
-make .env file with environment variables
+copy .env file with environment variables and fill it with your data
 ```
-cp /blackemployer_api/app/settings/.env.example /blackemployer_api/app/settings/.env
+cp /blackemployer_api/app/app/settings/.env.example /blackemployer_api/app/app/settings/.env
 
 cd /blackemployer_api/
 docker-compose up

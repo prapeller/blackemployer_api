@@ -29,10 +29,10 @@ services:
       - static:/vol/web/static
       - ./app:/app
     command: >
-      sh -c "python manage.py makemigrations
-      && python manage.py migrate
+      sh -c "
+      python manage.py migrate
+      && python manage.py collectstatic
       && gunicorn app.wsgi:application -b 0.0.0.0:8000"
-#      && python manage.py collectstatic
     environment:
       DJANGO_SETTINGS_MODULE: 'app.settings.prod_postgres'
     depends_on:
