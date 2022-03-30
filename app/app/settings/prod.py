@@ -16,7 +16,14 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_SSL = True if os.getenv('EMAIL_USE_SSL') == 'True' else False
 
-STATIC_ROOT = '/vol/web/static/'
+STATIC_ROOT = '/vol/web/static'
 MEDIA_ROOT = '/vol/web/static/media'
 
-CSRF_TRUSTED_ORIGINS = ["https://blackemployer.com", "https://www.blackemployer.com"]
+CSRF_TRUSTED_ORIGINS = [
+    "https://127.0.0.1",
+    "http://127.0.0.1",
+    "https://0.0.0.0",
+    "http://0.0.0.0",
+    "https://blackemployer.com",
+    "https://www.blackemployer.com"
+]

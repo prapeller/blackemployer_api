@@ -16,7 +16,7 @@ psql --version
 echo "======================================================"
 echo "======================================================"
 
-sudo chmod 777 /etc/postgresql/12/main/pg_hba.conf
+sudo chmod +-w- /etc/postgresql/12/main/pg_hba.conf
 sudo sed -i "s/local   all             postgres                                peer/local   all             postgres                                md5/g" /etc/postgresql/12/main/pg_hba.conf
 sudo systemctl start postgresql.service
 

@@ -33,7 +33,12 @@ echo "======================================================"
 echo "======================================================"
 
 sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
+
+sudo chmod +x /usr/local/bin/docker-compose;        # Apply executable permissions to the binary:
+sudo usermod -aG docker $USER                       # to add myself to docker group
+sudo chgrp docker /usr/local/bin/docker-compose     # to give docker-compose to docker group,
+sudo chmod 750 /usr/local/bin/docker-compose        # to allow docker group users to execute it
+
 echo "======================================================"
 echo "======================================================"
 echo "docker-compose version:"

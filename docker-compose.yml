@@ -5,12 +5,12 @@ version: '3.9'
 
 services:
   db:
-    image: postgres:14-alpine
+    image: postgres:12-alpine
     privileged: true
     container_name: db
     restart: always
-    ports:
-      - "54325:5432"
+#    ports:
+#      - "54325:5432"
     environment:
       POSTGRES_DB: blackemployer_db
       POSTGRES_USER: postgres
@@ -30,9 +30,11 @@ services:
       - ./app:/app
     command: >
       sh -c "
-      python manage.py migrate
-      && python manage.py collectstatic
-      && gunicorn app.wsgi:application -b 0.0.0.0:8000"
+      python manage.py wait_for_db &&
+      python manage.py collectstatic &&
+      python manage.py makemigrations &&
+      python manage.py migrate &&
+      gunicorn app.wsgi:application -b 0.0.0.0:8000"
     environment:
       DJANGO_SETTINGS_MODULE: 'app.settings.prod_postgres'
     depends_on:
