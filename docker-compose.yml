@@ -1,7 +1,7 @@
 #docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' db
 #docker-compose run --rm app sh -c "python manage.py test"
 
-version: '3.9'
+version: '3.0'
 
 services:
   db:
